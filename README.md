@@ -1,27 +1,29 @@
-# Celestial Timepiece
+# Teklok Time Suite
 
-Premium responsive clock UI by TekSquad.
+Dynamic single-shell app by TekSquad.
 
 ## Features
 
-- Analog clock with smooth hand movement
-- Digital time and date display
-- Theme switcher: Aurora, Sunset, Midnight, Forest
-- Responsive settings panel
-- Theme persistence with localStorage
+- One shell loader in index.html
+- Dynamic page loading for Clock and Calendar
+- Shared styling from one style.css
+- Theme switching and persistence
+- Calendar date notes saved in localStorage
 
-## Tech
+## Structure
 
-- HTML
-- CSS
-- JavaScript
-- Font Awesome
+- index.html: app shell + page switcher
+- pages/clock.html: clock page partial
+- pages/calender.html: calendar page partial
+- style.css: shared styles for all pages
+- script.js: dynamic loader + page initializers
 
 ## Run
 
-Open index.html in a browser.
+Use a local server (Live Server or Netlify preview).  
+Direct file:// open will block dynamic fetch loading.
 
 ## Credits
 
-TekSquad  
+TekSquad
 https://github.com/bhavinthakur29
