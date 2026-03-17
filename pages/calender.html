@@ -1,0 +1,48 @@
+<section class="calendar-app" aria-label="Calendar app">
+    <div class="calendar-pane">
+        <div class="eyebrow"><span class="dot"></span> Teklok Calendar</div>
+        <h1 class="heading">Plan your month with clarity and style.</h1>
+        <p class="sub">A premium monthly planner crafted for smooth navigation and focus.</p>
+
+        <div class="toolbar">
+            <h2 class="month-title" id="month-title">Month Year</h2>
+            <div class="controls">
+                <button id="prev-month" aria-label="Previous month" type="button">Prev</button>
+                <button id="today-btn" class="btn-accent" type="button">Today</button>
+                <button id="next-month" aria-label="Next month" type="button">Next</button>
+            </div>
+        </div>
+
+        <div class="weekdays" aria-hidden="true">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+        <div class="days" id="days-grid" role="grid" aria-label="Month view"></div>
+    </div>
+
+    <aside class="side-pane">
+        <article class="stat-card">
+            <h3>Selected Date</h3>
+            <p class="selected-date" id="selected-date">Pick a day</p>
+            <div class="chip-row">
+                <span class="chip" id="weekday-chip">Weekday</span>
+                <span class="chip alt" id="month-chip">Month</span>
+            </div>
+        </article>
+
+        <article class="note-card">
+            <h3>Notes</h3>
+            <p class="muted">Save a quick note for the selected date.</p>
+            <textarea id="note-input" placeholder="Write a note..."></textarea>
+            <div class="note-actions">
+                <button id="save-note" class="btn-accent" type="button">Save Note</button>
+                <button id="clear-note" type="button">Clear</button>
+            </div>
+        </article>
+    </aside>
+</section>

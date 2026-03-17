@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Sora:wght@400;500;600;700&display=swap');
 
 :root {
     --bg-1: #081126;
@@ -93,7 +94,8 @@ body {
     margin: 0;
     display: grid;
     place-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     color: var(--text);
     font-family: 'Syne', 'Segoe UI', sans-serif;
     background:
@@ -128,6 +130,95 @@ body::after {
     bottom: -18vmax;
     left: -10vmax;
     animation-delay: -8s;
+}
+
+.site-shell {
+    width: min(1100px, 95vw);
+    display: grid;
+    gap: 18px;
+    padding: 12px 0 24px;
+}
+
+.shell-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.brand-block {
+    display: grid;
+    gap: 6px;
+}
+
+.shell-kicker {
+    margin: 0;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-size: 0.72rem;
+}
+
+.shell-title {
+    margin: 0;
+    font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.shell-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px;
+    border-radius: 999px;
+    border: 1px solid var(--panel-border);
+    background: rgba(15, 23, 42, 0.25);
+    backdrop-filter: blur(12px);
+}
+
+.shell-nav-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 9px 14px;
+    font-size: 0.73rem;
+    cursor: pointer;
+    transition: all 180ms ease;
+}
+
+.shell-nav-btn:hover,
+.shell-nav-btn.active {
+    color: var(--text);
+    border-color: rgba(148, 163, 184, 0.4);
+    background: rgba(148, 163, 184, 0.14);
+}
+
+.page-root {
+    width: 100%;
+    display: grid;
+    place-items: center;
+}
+
+.load-error {
+    width: min(620px, 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(17, 24, 39, 0.55);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.load-error h2 {
+    margin: 0 0 8px;
+}
+
+.load-error p {
+    margin: 0;
+    color: var(--muted);
 }
 
 .scene {
@@ -860,5 +951,345 @@ body::after {
 
     .clock-wrap {
         gap: 12px;
+    }
+}
+
+.calendar-app {
+    width: min(1120px, 100%);
+    border-radius: 28px;
+    border: 1px solid rgba(122, 78, 33, 0.18);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 55px rgba(29, 49, 69, 0.18);
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    overflow: hidden;
+    animation: riseIn 650ms ease;
+    color: #1f2937;
+    font-family: 'Sora', 'Segoe UI', sans-serif;
+}
+
+.calendar-pane {
+    padding: 26px;
+    border-right: 1px solid rgba(122, 78, 33, 0.18);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.72));
+}
+
+.side-pane {
+    padding: 26px;
+    display: grid;
+    align-content: start;
+    gap: 18px;
+}
+
+.calendar-app .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.73rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5f6c7b;
+    font-weight: 700;
+}
+
+.calendar-app .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #0ea5a4;
+    box-shadow: 0 0 0 6px rgba(14, 165, 164, 0.15);
+}
+
+.calendar-app .heading {
+    margin: 10px 0 0;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.5rem, 2.8vw, 2.4rem);
+    line-height: 1.12;
+}
+
+.calendar-app .sub {
+    margin: 8px 0 22px;
+    color: #5f6c7b;
+    font-size: 0.9rem;
+}
+
+.calendar-app .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.calendar-app .month-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.calendar-app .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.calendar-app button,
+.calendar-app textarea {
+    font-family: inherit;
+}
+
+.calendar-app .controls button,
+.calendar-app #save-note,
+.calendar-app #clear-note {
+    border: 0;
+    background: #ffffff;
+    color: #1f2937;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    box-shadow: 0 8px 18px rgba(17, 24, 39, 0.08);
+}
+
+.calendar-app .controls button:hover,
+.calendar-app #save-note:hover,
+.calendar-app #clear-note:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 11px 24px rgba(17, 24, 39, 0.12);
+}
+
+.calendar-app .btn-accent {
+    background: linear-gradient(135deg, #0ea5a4, #14b8a6) !important;
+    color: #fff !important;
+    box-shadow: 0 12px 24px rgba(14, 165, 164, 0.35);
+}
+
+.calendar-app .weekdays,
+.calendar-app .days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.calendar-app .weekdays {
+    margin-bottom: 8px;
+}
+
+.calendar-app .weekdays div {
+    text-align: center;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #5f6c7b;
+    font-weight: 700;
+    padding: 6px 2px;
+}
+
+.calendar-app .day {
+    border: 1px solid transparent;
+    border-radius: 14px;
+    min-height: 74px;
+    padding: 8px 9px;
+    background: rgba(255, 255, 255, 0.78);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+    cursor: pointer;
+    transform: translateY(8px);
+    opacity: 0;
+    animation: dayIn 420ms ease forwards;
+}
+
+.calendar-app .day:hover {
+    border-color: rgba(14, 165, 164, 0.35);
+}
+
+.calendar-app .day.other-month {
+    opacity: 0.52;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.calendar-app .day.weekend {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 243, 236, 0.9));
+}
+
+.calendar-app .day.today {
+    border-color: rgba(255, 122, 89, 0.55);
+    box-shadow: 0 0 0 3px rgba(255, 122, 89, 0.15);
+}
+
+.calendar-app .day.selected {
+    border-color: #0ea5a4;
+    box-shadow: 0 0 0 4px rgba(14, 165, 164, 0.35);
+    background: linear-gradient(155deg, rgba(14, 165, 164, 0.14), rgba(255, 255, 255, 0.92));
+}
+
+.calendar-app .day-number {
+    font-weight: 700;
+    font-size: 0.93rem;
+}
+
+.calendar-app .marker {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #ff7a59;
+    box-shadow: 0 0 0 5px rgba(255, 122, 89, 0.16);
+    margin-top: auto;
+}
+
+.calendar-app .stat-card,
+.calendar-app .note-card {
+    border-radius: 18px;
+    border: 1px solid rgba(122, 78, 33, 0.2);
+    background: rgba(255, 255, 255, 0.74);
+    padding: 16px;
+}
+
+.calendar-app .stat-card h3,
+.calendar-app .note-card h3 {
+    margin: 0 0 10px;
+    font-size: 0.92rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5f6c7b;
+}
+
+.calendar-app .selected-date {
+    margin: 0;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+.calendar-app .chip-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.calendar-app .chip {
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.73rem;
+    font-weight: 700;
+    background: rgba(14, 165, 164, 0.16);
+    color: #0f766e;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.calendar-app .chip.alt {
+    background: rgba(255, 122, 89, 0.16);
+    color: #c2410c;
+}
+
+.calendar-app textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(122, 78, 33, 0.24);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 12px;
+    color: #1f2937;
+    resize: vertical;
+    min-height: 108px;
+    font-size: 0.9rem;
+}
+
+.calendar-app .note-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.calendar-app .muted {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #5f6c7b;
+}
+
+@keyframes riseIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes dayIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 980px) {
+    .shell-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .calendar-app {
+        grid-template-columns: 1fr;
+    }
+
+    .calendar-pane {
+        border-right: none;
+        border-bottom: 1px solid rgba(122, 78, 33, 0.18);
+    }
+}
+
+@media (max-width: 560px) {
+    .site-shell {
+        width: 100vw;
+        padding: 10px 8px 16px;
+    }
+
+    .shell-nav {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .shell-nav-btn {
+        flex: 1;
+        text-align: center;
+    }
+
+    .calendar-pane,
+    .side-pane {
+        padding: 14px;
+    }
+
+    .calendar-app .days {
+        gap: 6px;
+    }
+
+    .calendar-app .day {
+        min-height: 62px;
+        border-radius: 12px;
+        padding: 7px;
+    }
+
+    .calendar-app .controls button,
+    .calendar-app #save-note,
+    .calendar-app #clear-note {
+        padding: 9px 10px;
+    }
+
+    .calendar-app .toolbar {
+        gap: 8px;
     }
 }

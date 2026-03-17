@@ -5,73 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Bhavin Thakur">
+    <title>Teklok - Dynamic Showcase</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css">
-    <title>Celestial Timepiece by TekSquad</title>
 </head>
 
 <body data-theme="aurora">
-    <main class="scene" id="scene">
-        <header class="header">
-            <h1 class="title">Celestial Timepiece</h1>
-            <div class="header-right">
-                <div class="pill" id="timezone">Local Time</div>
-                <button class="settings-btn" id="settings-btn" aria-label="Settings" title="Open Settings">
-                    <i class="fa-solid fa-sliders"></i>
-                </button>
+    <main class="site-shell" aria-label="Teklok app shell">
+        <header class="shell-header">
+            <div class="brand-block">
+                <p class="shell-kicker">Teklok</p>
+                <h1 class="shell-title">Premium Time Experiences</h1>
             </div>
+            <nav class="shell-nav" aria-label="Page switcher">
+                <button class="shell-nav-btn active" data-page="clock" type="button">Clock</button>
+                <button class="shell-nav-btn" data-page="calendar" type="button">Calendar</button>
+            </nav>
         </header>
 
-        <div class="settings-panel" id="settings-panel">
-            <div class="settings-content">
-                <div class="settings-header">
-                    <h2>Settings</h2>
-                    <button class="close-btn" id="close-settings" aria-label="Close Settings">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="setting-group">
-                    <label>Theme</label>
-                    <div class="theme-grid">
-                        <button class="theme-btn" data-theme="aurora" aria-label="Aurora Theme">
-                            <span class="theme-dot aurora"></span>
-                            Aurora
-                        </button>
-                        <button class="theme-btn" data-theme="sunset" aria-label="Sunset Theme">
-                            <span class="theme-dot sunset"></span>
-                            Sunset
-                        </button>
-                        <button class="theme-btn" data-theme="midnight" aria-label="Midnight Theme">
-                            <span class="theme-dot midnight"></span>
-                            Midnight
-                        </button>
-                        <button class="theme-btn" data-theme="forest" aria-label="Forest Theme">
-                            <span class="theme-dot forest"></span>
-                            Forest
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <section class="clock-wrap" aria-label="Analog clock">
-            <div class="clock" id="clock">
-                <div class="ticks" id="ticks"></div>
-                <div class="numbers" id="numbers"></div>
-                <div class="hand hour" id="hour-hand"></div>
-                <div class="hand minute" id="min-hand"></div>
-                <div class="hand second" id="sec-hand"></div>
-                <div class="center-dot"></div>
-            </div>
-            <div class="digital" id="digital">00:00:00</div>
-            <p class="date" id="date">Loading date...</p>
-            <div class="credit" aria-label="Creator">
-                <i class="fa-solid fa-gears" title="TekSquad" aria-hidden="true"></i>
-                <a href="https://github.com/bhavinthakur29" target="_blank" rel="noopener noreferrer">TekSquad</a>
-            </div>
-        </section>
+        <section id="page-root" class="page-root" aria-live="polite"></section>
     </main>
+
     <script src="script.js"></script>
 </body>
 
