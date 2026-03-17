@@ -1,0 +1,20 @@
+<main class="scene widget-page" aria-label="Countdown page">
+    <header class="widget-page-header">
+        <h1 class="title">Countdown</h1>
+        <p class="widget-page-sub">Set your next important moment.</p>
+    </header>
+
+    <article class="widget-card widget-single" aria-label="Countdown widget">
+        <h2 class="widget-title">Target Timer</h2>
+        <div class="countdown-form">
+            <label for="countdown-target">Target date and time</label>
+            <input id="countdown-target" class="widget-input" type="datetime-local">
+        </div>
+        <div class="widget-controls">
+            <button class="widget-btn" id="set-countdown" type="button">Set</button>
+            <button class="widget-btn subtle" id="clear-countdown" type="button">Clear</button>
+        </div>
+        <p class="widget-primary" id="countdown-display">00d 00h 00m 00s</p>
+        <p class="widget-secondary" id="countdown-meta">No target selected</p>
+    </article>
+</main>

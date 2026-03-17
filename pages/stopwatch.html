@@ -1,0 +1,17 @@
+<main class="scene widget-page" aria-label="Stopwatch page">
+    <header class="widget-page-header">
+        <h1 class="title">Stopwatch</h1>
+        <p class="widget-page-sub">Track time and capture lap history.</p>
+    </header>
+
+    <article class="widget-card widget-single stopwatch-card" aria-label="Stopwatch widget">
+        <h2 class="widget-title">Precision Timer</h2>
+        <p class="widget-primary mono" id="stopwatch-display">00:00:00.00</p>
+        <div class="widget-controls wrap stopwatch-controls">
+            <button class="widget-btn stopwatch-primary-btn" id="start-stopwatch" type="button">Start</button>
+            <button class="widget-btn subtle" id="reset-stopwatch" type="button">Reset</button>
+            <button class="widget-btn subtle" id="lap-stopwatch" type="button">Lap</button>
+        </div>
+        <ol class="lap-list stopwatch-laps" id="lap-list" aria-label="Stopwatch laps"></ol>
+    </article>
+</main>

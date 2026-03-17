@@ -3,28 +3,45 @@ const navButtons = document.querySelectorAll('.shell-nav-btn');
 
 const routes = {
     clock: 'pages/clock.html',
-    calendar: 'pages/calender.html'
+    calendar: 'pages/calender.html',
+    countdown: 'pages/countdown.html',
+    stopwatch: 'pages/stopwatch.html',
+    worldclock: 'pages/worldclock.html'
 };
 
 const state = {
     activePage: null,
     frameId: null,
+    countdownIntervalId: null,
+    stopwatchIntervalId: null,
+    worldClockIntervalId: null,
     pointerMoveHandler: null,
     pointerLeaveHandler: null
 };
 
-function setActiveNav(page) {
-    navButtons.forEach((btn) => {
-        btn.classList.toggle('active', btn.dataset.page === page);
-    });
-}
-
-function cleanupClock() {
+function clearTickers() {
     if (state.frameId) {
         cancelAnimationFrame(state.frameId);
         state.frameId = null;
     }
 
+    if (state.countdownIntervalId) {
+        clearInterval(state.countdownIntervalId);
+        state.countdownIntervalId = null;
+    }
+
+    if (state.stopwatchIntervalId) {
+        clearInterval(state.stopwatchIntervalId);
+        state.stopwatchIntervalId = null;
+    }
+
+    if (state.worldClockIntervalId) {
+        clearInterval(state.worldClockIntervalId);
+        state.worldClockIntervalId = null;
+    }
+}
+
+function clearPointerEffects() {
     if (state.pointerMoveHandler) {
         document.removeEventListener('pointermove', state.pointerMoveHandler);
         state.pointerMoveHandler = null;
@@ -37,9 +54,19 @@ function cleanupClock() {
 }
 
 function cleanupCurrentPage() {
-    if (state.activePage === 'clock') {
-        cleanupClock();
-    }
+    clearTickers();
+    clearPointerEffects();
+}
+
+function setActiveNav(page) {
+    navButtons.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.page === page);
+    });
+}
+
+function applySavedTheme() {
+    const savedTheme = localStorage.getItem('selectedTheme') || 'aurora';
+    document.body.setAttribute('data-theme', savedTheme);
 }
 
 async function loadPage(page) {
@@ -59,10 +86,18 @@ async function loadPage(page) {
         setActiveNav(page);
         localStorage.setItem('teklok-active-page', page);
 
+        applySavedTheme();
+
         if (page === 'clock') {
             initClockPage();
-        } else {
+        } else if (page === 'calendar') {
             initCalendarPage();
+        } else if (page === 'countdown') {
+            initCountdownPage();
+        } else if (page === 'stopwatch') {
+            initStopwatchPage();
+        } else if (page === 'worldclock') {
+            initWorldClockPage();
         }
     } catch (error) {
         pageRoot.innerHTML = `
@@ -72,6 +107,28 @@ async function loadPage(page) {
             </section>
         `;
     }
+}
+
+function initThemeControls(settingsPanel) {
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    const savedTheme = localStorage.getItem('selectedTheme') || 'aurora';
+    document.body.setAttribute('data-theme', savedTheme);
+
+    themeButtons.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.theme === savedTheme);
+        btn.addEventListener('click', () => {
+            const newTheme = btn.dataset.theme;
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('selectedTheme', newTheme);
+
+            themeButtons.forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (settingsPanel) {
+                settingsPanel.classList.remove('active');
+            }
+        });
+    });
 }
 
 function initClockPage() {
@@ -169,26 +226,6 @@ function initClockPage() {
         timezone.textContent = zone.replace('_', ' ');
     }
 
-    const savedTheme = localStorage.getItem('selectedTheme') || 'aurora';
-    document.body.setAttribute('data-theme', savedTheme);
-
-    const themeButtons = document.querySelectorAll('.theme-btn');
-    themeButtons.forEach((btn) => {
-        btn.classList.toggle('active', btn.dataset.theme === savedTheme);
-        btn.addEventListener('click', () => {
-            const newTheme = btn.dataset.theme;
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('selectedTheme', newTheme);
-
-            themeButtons.forEach((b) => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if (settingsPanel) {
-                settingsPanel.classList.remove('active');
-            }
-        });
-    });
-
     if (settingsBtn && settingsPanel) {
         settingsBtn.addEventListener('click', () => settingsPanel.classList.add('active'));
     }
@@ -204,6 +241,8 @@ function initClockPage() {
             }
         });
     }
+
+    initThemeControls(settingsPanel);
 
     state.pointerMoveHandler = (event) => {
         const x = (event.clientX / window.innerWidth - 0.5) * 3;
@@ -223,6 +262,485 @@ function initClockPage() {
     buildDial();
     setTimezone();
     updateClock();
+}
+
+function initCountdownPage() {
+    const countdownInput = document.getElementById('countdown-target');
+    const setCountdownBtn = document.getElementById('set-countdown');
+    const clearCountdownBtn = document.getElementById('clear-countdown');
+    const countdownDisplay = document.getElementById('countdown-display');
+    const countdownMeta = document.getElementById('countdown-meta');
+
+    if (!countdownInput || !setCountdownBtn || !clearCountdownBtn || !countdownDisplay || !countdownMeta) {
+        return;
+    }
+
+    function toLocalInputValue(timestamp) {
+        const date = new Date(timestamp);
+        const pad = (value) => String(value).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function formatRemaining(ms) {
+        const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+    }
+
+    let countdownTarget = Number(localStorage.getItem('teklok-countdown-target')) || null;
+
+    function updateCountdown() {
+        if (!countdownTarget) {
+            countdownDisplay.textContent = '00d 00h 00m 00s';
+            countdownMeta.textContent = 'No target selected';
+            return;
+        }
+
+        const remaining = countdownTarget - Date.now();
+        if (remaining <= 0) {
+            countdownDisplay.textContent = '00d 00h 00m 00s';
+            countdownMeta.textContent = 'Countdown completed';
+            return;
+        }
+
+        countdownDisplay.textContent = formatRemaining(remaining);
+        countdownMeta.textContent = `Target: ${new Date(countdownTarget).toLocaleString()}`;
+    }
+
+    if (countdownTarget) {
+        countdownInput.value = toLocalInputValue(countdownTarget);
+    }
+
+    setCountdownBtn.addEventListener('click', () => {
+        if (!countdownInput.value) {
+            return;
+        }
+
+        const parsed = new Date(countdownInput.value).getTime();
+        if (Number.isNaN(parsed)) {
+            return;
+        }
+
+        countdownTarget = parsed;
+        localStorage.setItem('teklok-countdown-target', String(parsed));
+        updateCountdown();
+    });
+
+    clearCountdownBtn.addEventListener('click', () => {
+        countdownTarget = null;
+        countdownInput.value = '';
+        localStorage.removeItem('teklok-countdown-target');
+        updateCountdown();
+    });
+
+    state.countdownIntervalId = setInterval(updateCountdown, 1000);
+    updateCountdown();
+}
+
+function initStopwatchPage() {
+    const stopwatchDisplay = document.getElementById('stopwatch-display');
+    const startStopwatchBtn = document.getElementById('start-stopwatch');
+    const resetStopwatchBtn = document.getElementById('reset-stopwatch');
+    const lapStopwatchBtn = document.getElementById('lap-stopwatch');
+    const lapList = document.getElementById('lap-list');
+
+    if (!stopwatchDisplay || !startStopwatchBtn || !resetStopwatchBtn || !lapStopwatchBtn || !lapList) {
+        return;
+    }
+
+    let stopwatchElapsedMs = Number(localStorage.getItem('teklok-stopwatch-elapsed')) || 0;
+    let stopwatchStartedAt = null;
+    let stopwatchRunning = false;
+    const storedLaps = localStorage.getItem('teklok-stopwatch-laps');
+    const lapTimes = storedLaps ? JSON.parse(storedLaps) : [];
+
+    function formatStopwatch(ms) {
+        const totalMs = Math.max(0, ms);
+        const centiseconds = Math.floor((totalMs % 1000) / 10);
+        const totalSeconds = Math.floor(totalMs / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
+    }
+
+    function currentStopwatchMs() {
+        return stopwatchRunning ? stopwatchElapsedMs + (Date.now() - stopwatchStartedAt) : stopwatchElapsedMs;
+    }
+
+    function persistStopwatch() {
+        localStorage.setItem('teklok-stopwatch-elapsed', String(stopwatchElapsedMs));
+        localStorage.setItem('teklok-stopwatch-laps', JSON.stringify(lapTimes));
+    }
+
+    function renderStopwatch() {
+        stopwatchDisplay.textContent = formatStopwatch(currentStopwatchMs());
+    }
+
+    function renderLaps() {
+        lapList.innerHTML = '';
+        lapTimes.forEach((lap, index) => {
+            const li = document.createElement('li');
+            li.textContent = `Lap ${index + 1}: ${formatStopwatch(lap)}`;
+            lapList.appendChild(li);
+        });
+    }
+
+    startStopwatchBtn.addEventListener('click', () => {
+        if (!stopwatchRunning) {
+            stopwatchRunning = true;
+            stopwatchStartedAt = Date.now();
+            startStopwatchBtn.textContent = 'Pause';
+            startStopwatchBtn.setAttribute('aria-pressed', 'true');
+            return;
+        }
+
+        stopwatchElapsedMs = currentStopwatchMs();
+        stopwatchRunning = false;
+        stopwatchStartedAt = null;
+        persistStopwatch();
+        renderStopwatch();
+        startStopwatchBtn.textContent = 'Start';
+        startStopwatchBtn.setAttribute('aria-pressed', 'false');
+    });
+
+    resetStopwatchBtn.addEventListener('click', () => {
+        stopwatchElapsedMs = 0;
+        stopwatchStartedAt = null;
+        stopwatchRunning = false;
+        lapTimes.length = 0;
+        persistStopwatch();
+        renderStopwatch();
+        renderLaps();
+        startStopwatchBtn.textContent = 'Start';
+        startStopwatchBtn.setAttribute('aria-pressed', 'false');
+    });
+
+    lapStopwatchBtn.addEventListener('click', () => {
+        if (!stopwatchRunning) {
+            return;
+        }
+
+        lapTimes.unshift(currentStopwatchMs());
+        if (lapTimes.length > 10) {
+            lapTimes.pop();
+        }
+        persistStopwatch();
+        renderLaps();
+    });
+
+    state.stopwatchIntervalId = setInterval(renderStopwatch, 30);
+    renderStopwatch();
+    renderLaps();
+    startStopwatchBtn.textContent = stopwatchRunning ? 'Pause' : 'Start';
+    startStopwatchBtn.setAttribute('aria-pressed', stopwatchRunning ? 'true' : 'false');
+}
+
+function initWorldClockPage() {
+    const worldClockList = document.getElementById('worldclock-list');
+    const citySelect = document.getElementById('city-select');
+    const addCityBtn = document.getElementById('add-city');
+    const resetCitiesBtn = document.getElementById('reset-cities');
+    const cityModal = document.getElementById('city-modal');
+    const closeCityModal = document.getElementById('close-city-modal');
+    const cityModalName = document.getElementById('city-modal-name');
+    const cityModalTime = document.getElementById('city-modal-time');
+    const cityModalDate = document.getElementById('city-modal-date');
+    const cityModalOffset = document.getElementById('city-modal-offset');
+    const cityModalPhase = document.getElementById('city-modal-phase');
+
+    if (!worldClockList || !citySelect || !addCityBtn || !resetCitiesBtn) {
+        return;
+    }
+
+    const localZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const fallbackZones = [
+        'Europe/London',
+        'America/New_York',
+        'Asia/Tokyo',
+        'Australia/Sydney',
+        'Asia/Kolkata'
+    ];
+
+    const supportedZones = typeof Intl.supportedValuesOf === 'function'
+        ? Intl.supportedValuesOf('timeZone')
+        : fallbackZones;
+
+    function zoneToLabel(zone) {
+        return zone.split('/').pop().replace(/_/g, ' ');
+    }
+
+    const cityMap = new Map(
+        supportedZones.map((zone) => [zone, { label: zoneToLabel(zone), zone }])
+    );
+
+    if (!cityMap.has(localZone)) {
+        cityMap.set(localZone, { label: zoneToLabel(localZone), zone: localZone });
+    }
+
+    if (!cityMap.has('Europe/London')) {
+        cityMap.set('Europe/London', { label: 'London', zone: 'Europe/London' });
+    }
+
+    const worldClockCities = [...cityMap.values()];
+
+    const defaultZones = localZone === 'Europe/London'
+        ? ['Europe/London']
+        : [localZone, 'Europe/London'];
+
+    function getCityByZone(zone) {
+        return worldClockCities.find((city) => city.zone === zone);
+    }
+
+    function formatTimeForZone(zone) {
+        return new Intl.DateTimeFormat([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+            timeZone: zone
+        }).format(new Date());
+    }
+
+    function getGmtOffset(zone) {
+        const parts = new Intl.DateTimeFormat('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: zone,
+            timeZoneName: 'shortOffset'
+        }).formatToParts(new Date());
+
+        const tzPart = parts.find((part) => part.type === 'timeZoneName');
+        if (!tzPart) {
+            return 'GMT';
+        }
+
+        return tzPart.value.replace('UTC', 'GMT');
+    }
+
+    function getGmtOffsetMinutes(zone) {
+        const offset = getGmtOffset(zone);
+        const match = offset.match(/^GMT([+-])(\d{1,2})(?::?(\d{2}))?$/);
+        if (!match) {
+            return 0;
+        }
+
+        const sign = match[1] === '-' ? -1 : 1;
+        const hours = Number(match[2]);
+        const minutes = Number(match[3] || '0');
+        return sign * ((hours * 60) + minutes);
+    }
+
+    function getStatusForZone(zone) {
+        const hour = Number(new Intl.DateTimeFormat('en-US', {
+            hour: '2-digit',
+            hour12: false,
+            timeZone: zone
+        }).format(new Date()));
+
+        if (hour >= 6 && hour < 17) {
+            return { label: 'Day', icon: 'fa-sun' };
+        }
+        if (hour >= 17 && hour < 20) {
+            return { label: 'Sunset', icon: 'fa-cloud-sun' };
+        }
+        return { label: 'Night', icon: 'fa-moon' };
+    }
+
+    function parseSavedZones() {
+        try {
+            const saved = JSON.parse(localStorage.getItem('teklok-worldclock-selected') || '[]');
+            const valid = saved.filter((zone) => getCityByZone(zone));
+            const expectedBase = defaultZones.every((zone) => valid.includes(zone));
+            if (valid.length && valid.length <= 2 && expectedBase) {
+                return valid;
+            }
+            return [...defaultZones];
+        } catch {
+            return [...defaultZones];
+        }
+    }
+
+    let selectedZones = parseSavedZones();
+    let activeModalZone = null;
+
+    function persistZones() {
+        localStorage.setItem('teklok-worldclock-selected', JSON.stringify(selectedZones));
+    }
+
+    function renderCityOptions() {
+        const current = citySelect.value;
+        citySelect.innerHTML = '';
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select timezone';
+        citySelect.appendChild(placeholder);
+
+        const sortedByOffset = [...worldClockCities].sort((a, b) => {
+            const offsetDiff = getGmtOffsetMinutes(a.zone) - getGmtOffsetMinutes(b.zone);
+            if (offsetDiff !== 0) {
+                return offsetDiff;
+            }
+
+            const nameCompare = a.label.localeCompare(b.label);
+            if (nameCompare !== 0) {
+                return nameCompare;
+            }
+
+            return a.zone.localeCompare(b.zone);
+        });
+
+        sortedByOffset.forEach((city) => {
+            const option = document.createElement('option');
+            option.value = city.zone;
+            option.textContent = `${getGmtOffset(city.zone)} | ${city.label} (${city.zone})`;
+            citySelect.appendChild(option);
+        });
+
+        if (current && sortedByOffset.some((city) => city.zone === current)) {
+            citySelect.value = current;
+        } else {
+            citySelect.value = '';
+        }
+    }
+
+    function renderWorldClocks() {
+        worldClockList.innerHTML = '';
+
+        selectedZones.forEach((zone) => {
+            const city = getCityByZone(zone);
+            if (!city) {
+                return;
+            }
+
+            const row = document.createElement('button');
+            row.className = 'world-row';
+            row.type = 'button';
+
+            const left = document.createElement('div');
+            left.className = 'world-left';
+
+            const name = document.createElement('span');
+            name.className = 'world-city';
+            name.textContent = city.label;
+
+            const meta = document.createElement('span');
+            meta.className = 'world-meta';
+            meta.textContent = `Offset ${getGmtOffset(zone)} from GMT`;
+
+            left.appendChild(name);
+            left.appendChild(meta);
+
+            const time = document.createElement('span');
+            time.className = 'world-time';
+            time.textContent = formatTimeForZone(zone);
+
+            const status = getStatusForZone(zone);
+            const right = document.createElement('div');
+            right.className = 'world-right';
+
+            const phase = document.createElement('span');
+            phase.className = 'world-state';
+            phase.innerHTML = `<i class="fa-solid ${status.icon}" aria-hidden="true"></i>${status.label}`;
+
+            row.appendChild(left);
+            right.appendChild(time);
+            right.appendChild(phase);
+            row.appendChild(right);
+
+            row.addEventListener('click', () => {
+                activeModalZone = zone;
+                if (cityModal) {
+                    cityModal.classList.add('active');
+                    cityModal.setAttribute('aria-hidden', 'false');
+                }
+                updateCityModal();
+            });
+
+            worldClockList.appendChild(row);
+        });
+    }
+
+    function formatDateForZone(zone) {
+        return new Intl.DateTimeFormat([], {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: zone
+        }).format(new Date());
+    }
+
+    function updateCityModal() {
+        if (!activeModalZone || !cityModalName || !cityModalTime || !cityModalDate || !cityModalOffset || !cityModalPhase) {
+            return;
+        }
+
+        const city = getCityByZone(activeModalZone);
+        if (!city) {
+            return;
+        }
+
+        const status = getStatusForZone(activeModalZone);
+        cityModalName.textContent = city.label;
+        cityModalTime.textContent = formatTimeForZone(activeModalZone);
+        cityModalDate.textContent = formatDateForZone(activeModalZone);
+        cityModalOffset.textContent = `Offset ${getGmtOffset(activeModalZone)} from GMT`;
+        cityModalPhase.textContent = `Status: ${status.label}`;
+    }
+
+    function closeModal() {
+        if (!cityModal) {
+            return;
+        }
+
+        cityModal.classList.remove('active');
+        cityModal.setAttribute('aria-hidden', 'true');
+        activeModalZone = null;
+    }
+
+    addCityBtn.addEventListener('click', () => {
+        const zone = citySelect.value;
+        if (!zone || selectedZones.includes(zone)) {
+            return;
+        }
+
+        selectedZones.push(zone);
+        persistZones();
+        renderWorldClocks();
+        citySelect.value = '';
+    });
+
+    resetCitiesBtn.addEventListener('click', () => {
+        selectedZones = [...defaultZones];
+        persistZones();
+        renderWorldClocks();
+    });
+
+    if (closeCityModal) {
+        closeCityModal.addEventListener('click', closeModal);
+    }
+
+    if (cityModal) {
+        cityModal.addEventListener('click', (event) => {
+            if (event.target === cityModal) {
+                closeModal();
+            }
+        });
+    }
+
+    function updateWorldClocks() {
+        renderWorldClocks();
+        updateCityModal();
+    }
+
+    renderCityOptions();
+    state.worldClockIntervalId = setInterval(updateWorldClocks, 1000);
+    updateWorldClocks();
 }
 
 function initCalendarPage() {
@@ -439,5 +957,6 @@ navButtons.forEach((btn) => {
     });
 });
 
+applySavedTheme();
 const initialPage = localStorage.getItem('teklok-active-page') || 'clock';
 loadPage(initialPage);

@@ -1,0 +1,33 @@
+<main class="scene widget-page" aria-label="World clock page">
+    <header class="widget-page-header">
+        <h1 class="title">World Clock</h1>
+        <p class="widget-page-sub">Live times across major cities.</p>
+    </header>
+
+    <article class="widget-card widget-single" aria-label="World clock widget">
+        <h2 class="widget-title">Global Timezones</h2>
+        <div class="worldclock-toolbar">
+            <select id="city-select" class="widget-input world-select" aria-label="Select timezone"></select>
+            <div class="widget-controls world-actions">
+                <button class="widget-btn" id="add-city" type="button">Add City</button>
+                <button class="widget-btn subtle" id="reset-cities" type="button">Reset</button>
+            </div>
+        </div>
+        <div class="worldclock-list" id="worldclock-list"></div>
+        <p class="widget-secondary">Shows your local city and London by default. Add more if needed.</p>
+    </article>
+
+    <div class="city-modal" id="city-modal" aria-hidden="true">
+        <div class="city-modal-content">
+            <button class="city-modal-close" id="close-city-modal" type="button" aria-label="Close city spotlight">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <p class="widget-title">City Spotlight</p>
+            <h2 class="city-modal-name" id="city-modal-name">City</h2>
+            <p class="city-modal-time mono" id="city-modal-time">00:00:00</p>
+            <p class="city-modal-date" id="city-modal-date">Date</p>
+            <p class="city-modal-offset" id="city-modal-offset">Offset GMT+00:00 from GMT</p>
+            <p class="city-modal-phase" id="city-modal-phase">Status: Day</p>
+        </div>
+    </div>
+</main>
