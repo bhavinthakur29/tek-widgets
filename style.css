@@ -3083,3 +3083,48 @@ body::after {
         padding-top: 58px;
     }
 }
+
+/* Keep the shell header and footer anchored while widgets scroll independently. */
+body {
+    overflow: hidden;
+}
+
+.site-shell {
+    height: 100dvh;
+    min-height: 100dvh;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.page-root {
+    min-height: 0;
+    overflow: auto;
+    align-content: start;
+}
+
+.shell-footer {
+    align-self: end;
+}
+
+@media (max-width: 900px) {
+    .site-shell {
+        height: 100dvh;
+        min-height: 100dvh;
+    }
+
+    .page-root {
+        min-height: 0;
+        overflow: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-shell {
+        height: 100dvh;
+        min-height: 100dvh;
+    }
+
+    .page-root {
+        min-height: 0;
+        overflow: auto;
+    }
+}
