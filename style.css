@@ -1116,25 +1116,41 @@ body::after {
 }
 
 @media (max-width: 900px) {
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        overscroll-behavior-y: contain;
+    }
+
     .site-shell {
-        width: min(100vw, 100%);
-        padding: 10px 10px 18px;
-        gap: 14px;
+        width: 100%;
+        max-width: 100%;
+        padding: 10px 10px 12px;
+        gap: 8px;
+    }
+
+    .page-root {
+        place-items: start center;
+        align-content: start;
+        padding-top: 0;
     }
 
     .shell-header {
         align-items: center;
         justify-content: space-between;
+        gap: 10px;
     }
 
     .shell-actions {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
     .brand-block {
-        max-width: calc(100% - 120px);
+        max-width: calc(100% - 96px);
     }
 
     .menu-toggle {
@@ -1146,13 +1162,13 @@ body::after {
         right: 0;
         top: 0;
         bottom: 0;
-        width: min(320px, 84vw);
+        width: min(360px, 92vw);
         border-radius: 0;
         border-left: 1px solid var(--panel-border);
         border-top: none;
         border-bottom: none;
         border-right: none;
-        padding: 18px 12px;
+        padding: 14px 12px;
         background: color-mix(in srgb, var(--panel) 90%, rgba(2, 8, 23, 0.3));
         backdrop-filter: blur(14px);
         box-shadow: -18px 0 48px rgba(2, 8, 23, 0.42);
@@ -1172,7 +1188,7 @@ body::after {
     .nav-category {
         gap: 4px;
         margin-bottom: 0;
-        padding: 8px 0 10px;
+        padding: 6px 0 8px;
         border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 50%, transparent);
         display: grid;
         grid-template-columns: 1fr;
@@ -1211,13 +1227,29 @@ body::after {
         margin: 0;
     }
 
-    .shell-nav-btn {
+    .shell-nav-link {
         width: 100%;
         text-align: left;
-        border-radius: 12px;
-        padding: 10px 12px;
+        border-radius: 10px;
+        padding: 10px 10px;
         font-size: 0.75rem;
-        margin-left: 4px;
+        margin-left: 2px;
+    }
+
+    .shell-title {
+        display: none;
+    }
+
+    .shell-kicker {
+        font-size: 0.66rem;
+        letter-spacing: 0.14em;
+    }
+
+    .shell-settings-btn,
+    .menu-toggle {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
     }
 
     .widget-page {
@@ -1711,9 +1743,11 @@ body::after {
     }
 
     .settings-content {
-        max-width: calc(100vw - 32px);
-        width: calc(100vw - 32px);
+        max-width: calc(100vw - 24px);
+        width: calc(100vw - 24px);
         padding: 14px;
+        max-height: calc(100dvh - 24px);
+        overflow: auto;
     }
 
     .settings-header {
@@ -1737,8 +1771,45 @@ body::after {
 
 @media (max-width: 600px) {
     .settings-content {
-        max-width: calc(100vw - 40px);
-        width: calc(100vw - 40px);
+        max-width: calc(100vw - 24px);
+        width: calc(100vw - 24px);
+        max-height: calc(100dvh - 24px);
+        overflow: auto;
+    }
+
+    .page-root {
+        place-items: start center;
+        align-content: start;
+        padding-top: 12px;
+    }
+
+    .shell-header {
+        align-items: flex-start;
+    }
+
+    .brand-block {
+        max-width: calc(100% - 90px);
+    }
+
+    .shell-title {
+        display: none;
+    }
+
+    .shell-kicker {
+        font-size: 0.62rem;
+        letter-spacing: 0.14em;
+    }
+
+    .shell-settings-panel {
+        width: 100vw;
+        padding: 12px;
+    }
+
+    .shell-settings-panel .settings-content {
+        max-width: 100%;
+        width: 100%;
+        max-height: calc(100dvh - 24px);
+        overflow: auto;
     }
 
     .scene {
@@ -1765,11 +1836,6 @@ body::after {
     .pill {
         font-size: 0.75rem;
         padding: 6px 10px;
-    }
-
-    .settings-btn {
-        width: 34px;
-        height: 34px;
     }
 
     .clock {
@@ -2380,43 +2446,101 @@ body::after {
     transition: color 0.2s;
 }
 
+/* Final overrides to neutralize legacy navbar rules. */
+.shell-navbar {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    flex-wrap: wrap;
+    position: relative;
+    padding: 10px 0;
+    margin-top: 6px;
+    border-top: 1px solid var(--panel-border);
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.nav-category {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    padding: 0;
+    cursor: pointer;
+}
+
+.nav-close-btn {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    align-self: flex-end;
+    margin: 0 0 8px auto;
+    font-size: 1rem;
+}
+
+.nav-close-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    cursor: pointer;
+}
+
 .nav-label::after {
-    content: '▼';
-    font-size: 0.6rem;
-    transition: transform 0.2s;
+    content: '⌄';
+    font-size: 0.8rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--muted) 80%, #ffffff);
+    transform: translateY(-1px);
+    transition: transform 180ms ease, color 180ms ease, opacity 180ms ease;
+    opacity: 0.8;
+}
+
+.nav-category:hover .nav-label,
+.nav-category:focus-within .nav-label,
+.nav-category.active .nav-label {
+    color: var(--text);
+}
+
+.nav-category:hover .nav-label::after,
+.nav-category:focus-within .nav-label::after,
+.nav-category.active .nav-label::after {
+    color: var(--accent-2);
+    transform: translateY(-1px) rotate(180deg);
+    opacity: 1;
 }
 
 .category-items {
     position: absolute;
-    top: 100%;
-    /* Align to bottom of nav bar */
+    top: calc(100% - 2px);
     left: 0;
-    min-width: 180px;
-    background: var(--bg-2);
-    border: 1px solid var(--panel-border);
-    border-radius: 12px;
-    padding: 8px 0;
-    list-style: none;
-    margin: 0;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-
-    /* Animation and Visibility */
+    min-width: 200px;
+    padding: 4px 4px 6px;
+    border: 1px solid color-mix(in srgb, var(--panel-border) 72%, rgba(255, 255, 255, 0.12));
+    border-top: 0;
+    border-radius: 0 0 14px 14px;
+    background: color-mix(in srgb, var(--panel) 94%, rgba(2, 8, 23, 0.16));
+    box-shadow: 0 16px 30px rgba(2, 8, 23, 0.22);
+    backdrop-filter: blur(12px);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.2s ease;
-    z-index: 100;
-}
-
-/* Hover Bridge: This invisible area prevents flickering */
-.nav-category::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 15px;
+    transform: translateY(-2px);
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    pointer-events: none;
+    z-index: 20;
 }
 
 .nav-category:hover .category-items,
@@ -2425,51 +2549,537 @@ body::after {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
 }
 
-.nav-category:hover .nav-label::after {
-    transform: rotate(180deg);
+.shell-navbar.nav-locked .category-items {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-2px) !important;
+    pointer-events: none !important;
+}
+
+.shell-navbar.nav-locked .nav-label::after {
+    transform: translateY(-1px) !important;
 }
 
 .shell-nav-link {
     display: block;
     width: 100%;
-    padding: 10px 16px;
-    color: var(--text);
+    padding: 8px 10px 8px 14px;
+    color: color-mix(in srgb, var(--text) 82%, var(--muted));
     text-decoration: none;
     background: transparent;
-    border: none;
+    border: 0;
     text-align: left;
-    font-family: inherit;
-    font-size: 0.85rem;
+    font-family: 'Sora', 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: color 180ms ease, transform 180ms ease, opacity 180ms ease;
 }
 
-.shell-nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--accent-1);
+.shell-nav-link:hover,
+.shell-nav-link.active {
+    color: #ffffff;
+    transform: translateX(2px);
 }
 
-/* ... Keep existing media queries and page styles ... */
+@media (max-width: 900px) {
+    body {
+        place-items: start center;
+        align-content: start;
+    }
 
+    .page-root {
+        place-items: start center;
+        align-content: start;
+        padding-top: 12px;
+    }
 
-/* Ensure the menu hides when 'active' class is removed */
+    .shell-header {
+        gap: 10px;
+    }
+
+    .shell-actions {
+        gap: 8px;
+    }
+
+    .brand-block {
+        max-width: calc(100% - 96px);
+    }
+
+    .shell-navbar {
+        width: min(360px, 92vw);
+        padding: 14px 12px;
+    }
+
+    .nav-category {
+        padding: 6px 0 8px;
+        border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 50%, transparent);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .nav-category:last-child {
+        border-bottom: none;
+    }
+
+    .category-items {
+        position: static;
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        pointer-events: auto;
+        display: grid;
+        gap: 2px;
+    }
+
+    .shell-nav-link {
+        width: 100%;
+        border-radius: 10px;
+        padding: 10px 10px;
+        font-size: 0.75rem;
+        margin-left: 2px;
+    }
+
+    .shell-title {
+        display: none;
+    }
+
+    .shell-kicker {
+        font-size: 0.66rem;
+        letter-spacing: 0.14em;
+    }
+
+    .shell-settings-btn,
+    .menu-toggle {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        place-items: start center;
+        align-content: start;
+    }
+
+    .page-root {
+        place-items: start center;
+        align-content: start;
+        padding-top: 0;
+    }
+
+    .shell-header {
+        align-items: flex-start;
+    }
+
+    .brand-block {
+        max-width: calc(100% - 90px);
+    }
+
+    .shell-title {
+        display: none;
+    }
+
+    .shell-kicker {
+        font-size: 0.62rem;
+        letter-spacing: 0.14em;
+    }
+
+    .shell-settings-panel {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .shell-settings-panel .settings-content {
+        max-width: 100%;
+        width: 100%;
+        max-height: calc(100dvh - 24px);
+        overflow: auto;
+    }
+
+    .settings-content {
+        max-width: calc(100vw - 24px);
+        width: calc(100vw - 24px);
+        max-height: calc(100dvh - 24px);
+        overflow: auto;
+    }
+
+    .scene {
+        width: 100%;
+        padding: 16px;
+        border-radius: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        place-items: start center;
+        align-content: start;
+    }
+
+    .site-shell {
+        width: 100%;
+        max-width: 100%;
+        padding: 8px 8px 12px;
+        gap: 8px;
+    }
+
+    .shell-navbar {
+        width: 100%;
+        padding: 12px 10px;
+    }
+
+    .shell-settings-panel {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .shell-settings-panel .settings-content {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 20px);
+    }
+
+    .page-root {
+        padding-top: 0;
+    }
+
+    .scene {
+        width: 100%;
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    .shell-nav-link {
+        font-size: 0.72rem;
+        padding: 9px 10px 9px 12px;
+    }
+
+    .nav-label {
+        font-size: 0.66rem;
+    }
+}
+
+@media (max-width: 600px) {
+    html,
+    body {
+        overflow-x: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        overscroll-behavior-y: contain;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+
+    .site-shell,
+    .page-root,
+    .shell-navbar,
+    .shell-settings-panel {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .page-root {
+        padding-top: 0;
+    }
+
+    .scene {
+        width: 100%;
+        max-width: 100%;
+        padding: 14px;
+    }
+
+    .shell-navbar {
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+
+    .shell-settings-panel {
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+
+    .settings-content,
+    .shell-settings-panel .settings-content {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 20px);
+        overflow: auto;
+        box-sizing: border-box;
+    }
+
+    .settings-content::-webkit-scrollbar,
+    .shell-settings-panel::-webkit-scrollbar,
+    .shell-navbar::-webkit-scrollbar,
+    .page-root::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-shell {
+        width: 100%;
+        max-width: 100%;
+        gap: 0;
+        padding: 8px 8px 8px;
+    }
+
+    .shell-navbar {
+        display: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .shell-navbar.open {
+        display: grid;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 14px 12px;
+        margin: 0;
+        transform: none;
+    }
+
+    .page-root {
+        padding-top: 0;
+        margin-top: 0;
+        min-height: 0;
+    }
+
+    .widget-page-header {
+        margin-top: 0;
+        margin-bottom: 4px;
+    }
+
+    .widget-page {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 0;
+    }
+
+    .scene {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .worldclock-toolbar {
+        margin-top: 0;
+    }
+
+    .settings-content {
+        max-height: calc(100dvh - 20px);
+    }
+
+    .widget-single {
+        margin-top: 0;
+    }
+
+    .shell-settings-panel {
+        width: 100%;
+        left: 0;
+        right: 0;
+        padding: 10px;
+    }
+
+    .shell-settings-panel .settings-content {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 20px);
+    }
+}
+
+@media (max-width: 600px) {
+    .shell-header {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .brand-block {
+        flex: 1 1 auto;
+        max-width: none;
+        min-width: 0;
+        margin-left: 4px;
+    }
+
+    .shell-actions {
+        margin-left: auto;
+        flex: 0 0 auto;
+    }
+
+    .shell-kicker {
+        margin: 2px 0 8px;
+        font-size: 0.84rem;
+        line-height: 1.15;
+        letter-spacing: 0.12em;
+        font-weight: 700;
+    }
+
+    .page-root {
+        padding-top: 8px;
+    }
+
+    .shell-navbar {
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+
+    .widget-page-header {
+        margin-top: 0;
+        margin-bottom: 6px;
+    }
+
+    .widget-page {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .scene {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .shell-header {
+        justify-content: space-between;
+    }
+
+    .brand-block {
+        margin-left: 6px;
+    }
+
+    .shell-kicker {
+        margin: 2px 0 10px;
+        font-size: 0.8rem;
+    }
+
+    .page-root {
+        padding-top: 6px;
+    }
+
+    .shell-navbar {
+        margin-top: 3px;
+        margin-bottom: 4px;
+    }
+
+    .widget-page-header {
+        margin-bottom: 4px;
+    }
+
+    .scene {
+        margin-top: 0;
+    }
+}
+
+/* Final desktop/mobile fixes for navbar hover and brand spacing */
+.nav-category {
+    padding-bottom: 10px;
+}
+
+.nav-category::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    height: 8px;
+    background: transparent;
+}
+
+.nav-category:hover .category-items,
+.nav-category:focus-within .category-items,
 .nav-category.active .category-items {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateY(0) !important;
-}
-
-/* This ensures that once we click and remove the class via JS, 
-   the menu won't fight to stay open */
-.category-items {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
     pointer-events: auto;
 }
 
-/* If the user moves the mouse away, it functions normally via CSS */
-.nav-category:not(:hover) .category-items {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
+.category-items {
+    top: calc(100% - 8px);
+}
+
+.shell-navbar.nav-locked .nav-category:hover .category-items,
+.shell-navbar.nav-locked .nav-category:focus-within .category-items,
+.shell-navbar.nav-locked .nav-category.active .category-items,
+.shell-navbar.nav-locked .category-items {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-2px) !important;
+    pointer-events: none !important;
+}
+
+.shell-navbar.nav-locked .nav-category:hover .nav-label,
+.shell-navbar.nav-locked .nav-category:focus-within .nav-label,
+.shell-navbar.nav-locked .nav-category.active .nav-label {
+    color: var(--muted) !important;
+}
+
+.shell-navbar.nav-locked .nav-category:hover .nav-label::after,
+.shell-navbar.nav-locked .nav-category:focus-within .nav-label::after,
+.shell-navbar.nav-locked .nav-category.active .nav-label::after {
+    color: color-mix(in srgb, var(--muted) 80%, #ffffff) !important;
+    transform: translateY(-1px) !important;
+    opacity: 0.8 !important;
+}
+
+@media (max-width: 600px) {
+    .shell-header {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .brand-block {
+        margin-left: 8px;
+        margin-top: 2px;
+    }
+
+    .shell-kicker {
+        margin: 2px 0 10px;
+        padding-left: 6px;
+    }
+
+    .nav-category::after {
+        display: none;
+    }
+
+    .nav-close-btn {
+        display: flex;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 2;
+    }
+
+    .shell-navbar {
+        padding-top: 58px;
+    }
 }

@@ -3,6 +3,7 @@ const navButtons = document.querySelectorAll('.shell-nav-link');
 const shellNav = document.getElementById('shell-nav');
 const menuToggle = document.getElementById('menu-toggle');
 const navOverlay = document.getElementById('nav-overlay');
+const navCloseBtn = document.getElementById('nav-close-btn');
 const shellSettingsBtn = document.getElementById('shell-settings-btn');
 const shellSettingsPanel = document.getElementById('shell-settings-panel');
 const closeShellSettings = document.getElementById('close-shell-settings');
@@ -71,12 +72,20 @@ function setActiveNav(page) {
     });
 }
 
+function collapseNavCategories() {
+    document.querySelectorAll('.nav-category').forEach((category) => {
+        category.classList.remove('active');
+        category.setAttribute('aria-expanded', 'false');
+    });
+}
+
 function closeNavDrawer() {
     if (!shellNav || !menuToggle || !navOverlay) {
         return;
     }
 
     shellNav.classList.remove('open');
+    shellNav.classList.remove('nav-locked');
     navOverlay.classList.remove('active');
     menuToggle.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('nav-open');
@@ -176,6 +185,7 @@ function initThemeControls() {
 
             themeButtons.forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
+            closeSettingsPanel();
         });
     });
 }
@@ -1071,13 +1081,12 @@ navButtons.forEach((btn) => {
     btn.addEventListener('click', (event) => {
         event.preventDefault();
         const page = btn.dataset.page;
-        loadPage(page);
-
-        const parentCategory = btn.closest('.nav-category');
-        if (parentCategory) {
-            parentCategory.classList.remove('active');
-            parentCategory.setAttribute('aria-expanded', 'false');
+        if (shellNav) {
+            shellNav.classList.add('nav-locked');
         }
+        btn.blur();
+        collapseNavCategories();
+        loadPage(page);
 
         closeNavDrawer();
     });
@@ -1089,6 +1098,16 @@ if (menuToggle) {
 
 if (navOverlay) {
     navOverlay.addEventListener('click', closeNavDrawer);
+}
+
+if (navCloseBtn) {
+    navCloseBtn.addEventListener('click', closeNavDrawer);
+}
+
+if (shellNav) {
+    shellNav.addEventListener('mouseleave', () => {
+        shellNav.classList.remove('nav-locked');
+    });
 }
 
 if (shellSettingsBtn) {
@@ -1171,7 +1190,10 @@ function initDropdowns() {
 
     document.addEventListener('click', (event) => {
         if (!event.target.closest('.nav-category')) {
-            setActiveCategory(null);
+        setActiveCategory(null);
+        if (shellNav) {
+            shellNav.classList.remove('nav-locked');
+        }
         }
     });
 }
