@@ -5,27 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Bhavin Thakur">
-    <title>Teklok - Dynamic Showcase</title>
+    <title>TekSquad Utility Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body data-theme="aurora">
-    <main class="site-shell" aria-label="Teklok app shell">
+    <main class="site-shell" aria-label="TekSquad utility hub shell">
         <header class="shell-header">
             <div class="brand-block">
-                <p class="shell-kicker">Teklok</p>
-                <h1 class="shell-title">Premium Time Experiences</h1>
+                <p class="shell-kicker">TekSquad Utility Hub</p>
+                <h1 class="shell-title">Designed and built by TekSquad.</h1>
             </div>
-            <nav class="shell-nav" aria-label="Page switcher">
-                <button class="shell-nav-btn active" data-page="clock" type="button">Clock</button>
-                <button class="shell-nav-btn" data-page="calendar" type="button">Calendar</button>
-                <button class="shell-nav-btn" data-page="countdown" type="button">Countdown</button>
-                <button class="shell-nav-btn" data-page="stopwatch" type="button">Stopwatch</button>
-                <button class="shell-nav-btn" data-page="worldclock" type="button">World Clock</button>
-            </nav>
+            <div class="shell-actions">
+                <button class="settings-btn shell-settings-btn" id="shell-settings-btn" aria-label="Settings"
+                    title="Open Settings" aria-expanded="false" aria-controls="shell-settings-panel">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+                <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation menu"
+                    aria-expanded="false" aria-controls="shell-nav">
+                    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                </button>
+            </div>
         </header>
+
+        <nav class="shell-navbar" id="shell-nav">
+            <div class="nav-category" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <div class="nav-label">Timekeeping</div>
+                <ul class="category-items">
+                    <li><button class="shell-nav-link" data-page="clock">Analog Clock</button></li>
+                    <li><button class="shell-nav-link" data-page="worldclock">World Clock</button></li>
+                    <li><button class="shell-nav-link" data-page="stopwatch">Stopwatch</button></li>
+                    <li><button class="shell-nav-link" data-page="countdown">Countdown</button></li>
+                </ul>
+            </div>
+
+            <div class="nav-category" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <div class="nav-label">Planning</div>
+                <ul class="category-items">
+                    <li><button class="shell-nav-link" data-page="calendar">Event Calendar</button></li>
+                </ul>
+            </div>
+        </nav>
 
         <section id="page-root" class="page-root" aria-live="polite"></section>
 
@@ -37,6 +59,25 @@
             </div>
         </footer>
     </main>
+
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <div class="settings-overlay" id="settings-overlay" aria-hidden="true"></div>
+
+    <aside class="shell-settings-panel" id="shell-settings-panel" role="region" aria-label="Settings Panel">
+        <div class="settings-header">
+            <h2>Settings</h2>
+            <button id="close-shell-settings" aria-label="Close Settings">&times;</button>
+        </div>
+        <div class="settings-content">
+            <p class="settings-label">Theme Selection</p>
+            <div class="theme-grid">
+                <button class="theme-btn" data-theme="aurora">Aurora</button>
+                <button class="theme-btn" data-theme="sunset">Sunset</button>
+                <button class="theme-btn" data-theme="midnight">Midnight</button>
+                <button class="theme-btn" data-theme="forest">Forest</button>
+            </div>
+        </div>
+    </aside>
 
     <script src="script.js"></script>
 </body>

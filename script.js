@@ -1,5 +1,12 @@
 const pageRoot = document.getElementById('page-root');
-const navButtons = document.querySelectorAll('.shell-nav-btn');
+const navButtons = document.querySelectorAll('.shell-nav-link');
+const shellNav = document.getElementById('shell-nav');
+const menuToggle = document.getElementById('menu-toggle');
+const navOverlay = document.getElementById('nav-overlay');
+const shellSettingsBtn = document.getElementById('shell-settings-btn');
+const shellSettingsPanel = document.getElementById('shell-settings-panel');
+const closeShellSettings = document.getElementById('close-shell-settings');
+const settingsOverlay = document.getElementById('settings-overlay');
 
 const routes = {
     clock: 'pages/clock.html',
@@ -64,6 +71,52 @@ function setActiveNav(page) {
     });
 }
 
+function closeNavDrawer() {
+    if (!shellNav || !menuToggle || !navOverlay) {
+        return;
+    }
+
+    shellNav.classList.remove('open');
+    navOverlay.classList.remove('active');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('nav-open');
+}
+
+function toggleNavDrawer() {
+    if (!shellNav || !menuToggle || !navOverlay) {
+        return;
+    }
+
+    const isOpen = shellNav.classList.toggle('open');
+    navOverlay.classList.toggle('active', isOpen);
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    document.body.classList.toggle('nav-open', isOpen);
+}
+
+function closeSettingsPanel() {
+    if (!shellSettingsPanel || !settingsOverlay) {
+        return;
+    }
+
+    shellSettingsPanel.classList.remove('active');
+    settingsOverlay.classList.remove('active');
+    if (shellSettingsBtn) {
+        shellSettingsBtn.setAttribute('aria-expanded', 'false');
+    }
+}
+
+function toggleSettingsPanel() {
+    if (!shellSettingsPanel || !settingsOverlay) {
+        return;
+    }
+
+    const isOpen = shellSettingsPanel.classList.toggle('active');
+    settingsOverlay.classList.toggle('active', isOpen);
+    if (shellSettingsBtn) {
+        shellSettingsBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+}
+
 function applySavedTheme() {
     const savedTheme = localStorage.getItem('selectedTheme') || 'aurora';
     document.body.setAttribute('data-theme', savedTheme);
@@ -109,7 +162,7 @@ async function loadPage(page) {
     }
 }
 
-function initThemeControls(settingsPanel) {
+function initThemeControls() {
     const themeButtons = document.querySelectorAll('.theme-btn');
     const savedTheme = localStorage.getItem('selectedTheme') || 'aurora';
     document.body.setAttribute('data-theme', savedTheme);
@@ -123,10 +176,6 @@ function initThemeControls(settingsPanel) {
 
             themeButtons.forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
-
-            if (settingsPanel) {
-                settingsPanel.classList.remove('active');
-            }
         });
     });
 }
@@ -141,9 +190,6 @@ function initClockPage() {
     const digital = document.getElementById('digital');
     const dateEl = document.getElementById('date');
     const timezone = document.getElementById('timezone');
-    const settingsPanel = document.getElementById('settings-panel');
-    const settingsBtn = document.getElementById('settings-btn');
-    const closeSettings = document.getElementById('close-settings');
 
     if (!scene || !hourHand || !minHand || !secHand || !ticks || !numbers) {
         return;
@@ -225,24 +271,6 @@ function initClockPage() {
         const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         timezone.textContent = zone.replace('_', ' ');
     }
-
-    if (settingsBtn && settingsPanel) {
-        settingsBtn.addEventListener('click', () => settingsPanel.classList.add('active'));
-    }
-
-    if (closeSettings && settingsPanel) {
-        closeSettings.addEventListener('click', () => settingsPanel.classList.remove('active'));
-    }
-
-    if (settingsPanel) {
-        settingsPanel.addEventListener('click', (event) => {
-            if (event.target === settingsPanel) {
-                settingsPanel.classList.remove('active');
-            }
-        });
-    }
-
-    initThemeControls(settingsPanel);
 
     state.pointerMoveHandler = (event) => {
         const x = (event.clientX / window.innerWidth - 0.5) * 3;
@@ -1040,12 +1068,112 @@ function initCalendarPage() {
 }
 
 navButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (event) => {
+        event.preventDefault();
         const page = btn.dataset.page;
         loadPage(page);
+
+        const parentCategory = btn.closest('.nav-category');
+        if (parentCategory) {
+            parentCategory.classList.remove('active');
+            parentCategory.setAttribute('aria-expanded', 'false');
+        }
+
+        closeNavDrawer();
     });
 });
 
+if (menuToggle) {
+    menuToggle.addEventListener('click', toggleNavDrawer);
+}
+
+if (navOverlay) {
+    navOverlay.addEventListener('click', closeNavDrawer);
+}
+
+if (shellSettingsBtn) {
+    shellSettingsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSettingsPanel();
+    });
+}
+
+if (closeShellSettings) {
+    closeShellSettings.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeSettingsPanel();
+    });
+}
+
+if (settingsOverlay) {
+    settingsOverlay.addEventListener('click', closeSettingsPanel);
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeNavDrawer();
+        closeSettingsPanel();
+    }
+});
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+        closeNavDrawer();
+    }
+});
+
 applySavedTheme();
+initThemeControls();
 const initialPage = localStorage.getItem('teklok-active-page') || 'clock';
 loadPage(initialPage);
+
+
+
+// UPDATED CODE LOGIC
+function initDropdowns() {
+    const categories = document.querySelectorAll('.nav-category');
+
+    if (!categories.length) {
+        return;
+    }
+
+    const setActiveCategory = (targetCategory) => {
+        categories.forEach((category) => {
+            const isActive = category === targetCategory;
+            category.classList.toggle('active', isActive);
+            category.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        });
+    };
+
+    categories.forEach((category) => {
+        category.setAttribute('tabindex', '0');
+        category.setAttribute('aria-expanded', 'false');
+
+        category.addEventListener('click', (event) => {
+            if (event.target.closest('.shell-nav-link')) {
+                return;
+            }
+
+            const isOpen = category.classList.contains('active');
+            setActiveCategory(isOpen ? null : category);
+        });
+
+        category.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const isOpen = category.classList.contains('active');
+                setActiveCategory(isOpen ? null : category);
+            }
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.nav-category')) {
+            setActiveCategory(null);
+        }
+    });
+}
+
+initDropdowns();
