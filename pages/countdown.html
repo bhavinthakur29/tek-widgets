@@ -4,14 +4,27 @@
         <p class="widget-page-sub">Set your next important moment.</p>
     </header>
 
-    <article class="widget-card widget-single" aria-label="Countdown widget">
+    <article class="widget-card widget-single countdown-card" aria-label="Countdown widget">
         <h2 class="widget-title">Target Timer</h2>
         <div class="countdown-form">
-            <label for="countdown-target">Target date and time</label>
-            <input id="countdown-target" class="widget-input" type="datetime-local">
+            <label for="countdown-date">Target date</label>
+            <input id="countdown-date" class="widget-input" type="date">
+            <label>Target time (HH:MM AM/PM)</label>
+            <div class="time-select-row" aria-label="Target time selectors">
+                <select id="countdown-hour" class="widget-input time-select" aria-label="Hour">
+                    <option value="">00</option>
+                </select>
+                <span class="time-separator" aria-hidden="true">:</span>
+                <select id="countdown-minute" class="widget-input time-select" aria-label="Minute">
+                    <option value="">00</option>
+                </select>
+                <select id="countdown-period" class="widget-input time-select time-period-select" aria-label="AM or PM">
+                    <option value="" disabled selected>AM/PM</option>
+                </select>
+            </div>
         </div>
-        <div class="widget-controls">
-            <button class="widget-btn" id="set-countdown" type="button">Set</button>
+        <div class="widget-controls countdown-controls">
+            <button class="widget-btn countdown-primary-btn" id="set-countdown" type="button">Set</button>
             <button class="widget-btn subtle" id="clear-countdown" type="button">Clear</button>
         </div>
         <p class="widget-primary" id="countdown-display">00d 00h 00m 00s</p>

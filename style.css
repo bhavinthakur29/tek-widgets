@@ -506,7 +506,7 @@ body::after {
 
 .countdown-form {
     display: grid;
-    gap: 6px;
+    gap: 8px;
 }
 
 .countdown-form label {
@@ -514,6 +514,28 @@ body::after {
     letter-spacing: 0.08em;
     color: var(--muted);
     text-transform: uppercase;
+}
+
+.time-select-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.time-select {
+    text-align: center;
+}
+
+.time-period-select {
+    font-weight: 700;
+}
+
+.time-separator {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 1rem;
+    color: var(--muted);
+    text-align: center;
 }
 
 .widget-input {
@@ -531,6 +553,21 @@ body::after {
     margin-top: 10px;
     display: flex;
     gap: 8px;
+}
+
+.countdown-controls {
+    gap: 10px;
+}
+
+.countdown-controls .widget-btn {
+    min-height: 42px;
+    padding: 10px 14px;
+    font-size: 0.76rem;
+}
+
+.countdown-controls .countdown-primary-btn {
+    min-height: 42px;
+    font-weight: 700;
 }
 
 .widget-controls.wrap {
@@ -577,6 +614,19 @@ body::after {
     margin: 0;
     font-size: 0.76rem;
     color: var(--muted);
+}
+
+#countdown-meta.countdown-meta-alert {
+    color: #fde68a;
+    font-weight: 700;
+    background: rgba(180, 83, 9, 0.22);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+
+#countdown-meta.countdown-meta-info {
+    color: color-mix(in srgb, var(--accent-1) 72%, #ffffff);
 }
 
 .lap-list {
@@ -905,6 +955,54 @@ body::after {
         font-size: clamp(1.2rem, 8vw, 1.8rem);
     }
 
+    .countdown-card {
+        padding: 16px;
+    }
+
+    .countdown-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .countdown-controls .widget-btn {
+        width: 100%;
+        min-height: 50px;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+    }
+
+    .countdown-controls .countdown-primary-btn {
+        min-height: 58px;
+        font-size: 0.98rem;
+    }
+
+    .time-select-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .time-separator {
+        display: none;
+    }
+
+    .time-period-select {
+        grid-column: 1 / -1;
+    }
+
+    #countdown-display {
+        width: 100%;
+        text-align: center;
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: clamp(1.8rem, 9vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        line-height: 1.1;
+        margin: 18px 0 12px;
+        color: #f8fdff;
+        text-shadow: 0 0 16px color-mix(in srgb, var(--accent-2) 45%, transparent);
+    }
+
     .stopwatch-card {
         padding: 16px;
     }
@@ -953,6 +1051,43 @@ body::after {
 
     .world-meta {
         font-size: 0.7rem;
+    }
+
+    .countdown-controls {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .countdown-controls .widget-btn {
+        min-height: 52px;
+        font-size: 0.84rem;
+    }
+
+    .countdown-controls .countdown-primary-btn {
+        min-height: 62px;
+        font-size: 1.02rem;
+    }
+
+    .time-select-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .time-period-select {
+        grid-column: 1 / -1;
+    }
+
+    #countdown-display {
+        width: 100%;
+        text-align: center;
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: clamp(1.6rem, 10vw, 2rem);
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        line-height: 1.1;
+        margin: 16px 0 12px;
+        color: #f8fdff;
+        text-shadow: 0 0 14px color-mix(in srgb, var(--accent-2) 42%, transparent);
     }
 
     .stopwatch-controls {

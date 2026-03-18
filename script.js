@@ -265,20 +265,55 @@ function initClockPage() {
 }
 
 function initCountdownPage() {
-    const countdownInput = document.getElementById('countdown-target');
+    const countdownDateInput = document.getElementById('countdown-date');
+    const hourSelect = document.getElementById('countdown-hour');
+    const minuteSelect = document.getElementById('countdown-minute');
+    const periodSelect = document.getElementById('countdown-period');
     const setCountdownBtn = document.getElementById('set-countdown');
     const clearCountdownBtn = document.getElementById('clear-countdown');
     const countdownDisplay = document.getElementById('countdown-display');
     const countdownMeta = document.getElementById('countdown-meta');
 
-    if (!countdownInput || !setCountdownBtn || !clearCountdownBtn || !countdownDisplay || !countdownMeta) {
+    if (!countdownDateInput || !hourSelect || !minuteSelect || !periodSelect || !setCountdownBtn || !clearCountdownBtn || !countdownDisplay || !countdownMeta) {
         return;
     }
 
-    function toLocalInputValue(timestamp) {
+    const DEFAULT_HOUR = '12';
+    const DEFAULT_MINUTE = '00';
+    const DEFAULT_PERIOD = 'AM';
+
+    function populateRangeOptions(select, start, end, placeholder) {
+        select.innerHTML = '';
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '';
+        placeholderOption.textContent = placeholder;
+        select.appendChild(placeholderOption);
+
+        for (let value = start; value <= end; value++) {
+            const option = document.createElement('option');
+            const text = String(value).padStart(2, '0');
+            option.value = text;
+            option.textContent = text;
+            select.appendChild(option);
+        }
+    }
+
+    function toLocalDateTimeParts(timestamp) {
         const date = new Date(timestamp);
         const pad = (value) => String(value).padStart(2, '0');
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        const datePart = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+        const hour24 = date.getHours();
+        const minute = pad(date.getMinutes());
+        const period = hour24 >= 12 ? 'PM' : 'AM';
+        const hour12 = pad((hour24 % 12) || 12);
+        return { datePart, hour12, minute, period };
+    }
+
+    function getTomorrowDatePart() {
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        const pad = (value) => String(value).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
     }
 
     function formatRemaining(ms) {
@@ -291,47 +326,101 @@ function initCountdownPage() {
     }
 
     let countdownTarget = Number(localStorage.getItem('teklok-countdown-target')) || null;
+    let countdownHintMessage = '';
+
+    function setCountdownMeta(message, tone = 'default') {
+        countdownMeta.textContent = message;
+        countdownMeta.classList.toggle('countdown-meta-alert', tone === 'alert');
+        countdownMeta.classList.toggle('countdown-meta-info', tone === 'info');
+    }
+
+    populateRangeOptions(hourSelect, 1, 12, '00');
+    populateRangeOptions(minuteSelect, 0, 59, '00');
+    periodSelect.innerHTML = '';
+    const periodPlaceholder = document.createElement('option');
+    periodPlaceholder.value = '';
+    periodPlaceholder.textContent = 'AM/PM';
+    periodPlaceholder.disabled = true;
+    periodPlaceholder.selected = true;
+    periodSelect.appendChild(periodPlaceholder);
+    ['AM', 'PM'].forEach((period) => {
+        const option = document.createElement('option');
+        option.value = period;
+        option.textContent = period;
+        periodSelect.appendChild(option);
+    });
 
     function updateCountdown() {
         if (!countdownTarget) {
             countdownDisplay.textContent = '00d 00h 00m 00s';
-            countdownMeta.textContent = 'No target selected';
+            if (countdownHintMessage) {
+                setCountdownMeta(countdownHintMessage, 'alert');
+            } else {
+                setCountdownMeta('No target selected');
+            }
             return;
         }
 
         const remaining = countdownTarget - Date.now();
         if (remaining <= 0) {
             countdownDisplay.textContent = '00d 00h 00m 00s';
-            countdownMeta.textContent = 'Countdown completed';
+            setCountdownMeta('Countdown completed', 'info');
             return;
         }
 
+        countdownHintMessage = '';
         countdownDisplay.textContent = formatRemaining(remaining);
-        countdownMeta.textContent = `Target: ${new Date(countdownTarget).toLocaleString()}`;
+        setCountdownMeta(`Target: ${new Date(countdownTarget).toLocaleString()}`, 'info');
     }
 
     if (countdownTarget) {
-        countdownInput.value = toLocalInputValue(countdownTarget);
+        const { datePart, hour12, minute, period } = toLocalDateTimeParts(countdownTarget);
+        countdownDateInput.value = datePart;
+        hourSelect.value = hour12;
+        minuteSelect.value = minute;
+        periodSelect.value = period;
+    } else {
+        countdownDateInput.value = getTomorrowDatePart();
+        hourSelect.value = DEFAULT_HOUR;
+        minuteSelect.value = DEFAULT_MINUTE;
+        periodSelect.value = DEFAULT_PERIOD;
     }
 
     setCountdownBtn.addEventListener('click', () => {
-        if (!countdownInput.value) {
-            return;
-        }
+        const selectedDate = countdownDateInput.value || getTomorrowDatePart();
+        const selectedHour = hourSelect.value || DEFAULT_HOUR;
+        const selectedMinute = minuteSelect.value || DEFAULT_MINUTE;
+        const selectedPeriod = periodSelect.value || DEFAULT_PERIOD;
 
-        const parsed = new Date(countdownInput.value).getTime();
+        countdownDateInput.value = selectedDate;
+        hourSelect.value = selectedHour;
+        minuteSelect.value = selectedMinute;
+        periodSelect.value = selectedPeriod;
+
+        const hour12 = Number(selectedHour);
+        const minute = selectedMinute;
+        const period = selectedPeriod;
+        const hour24 = String((hour12 % 12) + (period === 'PM' ? 12 : 0)).padStart(2, '0');
+        const parsed = new Date(`${selectedDate}T${hour24}:${minute}`).getTime();
         if (Number.isNaN(parsed)) {
+            countdownHintMessage = 'Invalid date/time selected. Please choose a valid target.';
+            setCountdownMeta(countdownHintMessage, 'alert');
             return;
         }
 
         countdownTarget = parsed;
+        countdownHintMessage = '';
         localStorage.setItem('teklok-countdown-target', String(parsed));
         updateCountdown();
     });
 
     clearCountdownBtn.addEventListener('click', () => {
         countdownTarget = null;
-        countdownInput.value = '';
+        countdownHintMessage = '';
+        countdownDateInput.value = getTomorrowDatePart();
+        hourSelect.value = DEFAULT_HOUR;
+        minuteSelect.value = DEFAULT_MINUTE;
+        periodSelect.value = DEFAULT_PERIOD;
         localStorage.removeItem('teklok-countdown-target');
         updateCountdown();
     });
